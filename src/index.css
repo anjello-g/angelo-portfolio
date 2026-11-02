@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid #14161a;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: #c5e86c;
+    color: #14161a;
+  }
+}
+
+@layer components {
+  .section-shell {
+    @apply mx-auto w-full max-w-[1296px] px-6 sm:px-10;
+  }
+  .eyebrow {
+    @apply flex items-center gap-4 text-xs font-medium uppercase tracking-[0.22em];
+  }
+  .italic-serif {
+    @apply font-serif font-normal italic text-muted;
+  }
+  .btn-dark {
+    @apply inline-flex items-center gap-3.5 rounded-full bg-ink px-7 py-4 text-[15px] font-medium text-white shadow-cta transition-transform duration-300 hover:-translate-y-0.5;
+  }
+  .glass-card {
+    @apply rounded-2xl border border-line bg-white/90 shadow-card;
+  }
+}
