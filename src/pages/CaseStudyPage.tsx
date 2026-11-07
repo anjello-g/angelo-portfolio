@@ -1,4 +1,4 @@
-import type { MouseEvent, ReactNode } from "react";
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { profile, projects, type Project } from "../data/content";
@@ -20,15 +20,15 @@ function FlowDiagram({ steps }: { steps: string[] }) {
         return (
           <li key={step} className="flex flex-col items-start md:flex-row md:items-center">
             <motion.span
-              className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-sm font-medium text-ink shadow-tile ${
-                last ? "border-ink bg-lime" : "border-line bg-white"
+              className={`flex items-center gap-2.5 rounded-xl border px-4 py-2.5 text-sm font-medium shadow-tile ${
+                last ? "border-ink bg-accent text-onaccent" : "border-line bg-surface text-ink"
               }`}
               initial={{ opacity: 0, y: 10, scale: 0.96 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay, ease }}
             >
-              <span className="text-xs tabular-nums text-muted">{String(i + 1).padStart(2, "0")}</span>
+              <span className={`text-xs tabular-nums ${last ? "text-onaccent/70" : "text-muted"}`}>{String(i + 1).padStart(2, "0")}</span>
               {step}
             </motion.span>
             {!last && (
@@ -75,7 +75,7 @@ function MoreProjects({ project }: { project: Project }) {
   };
 
   return (
-    <nav aria-label="More case studies" className="mt-16 grid gap-4 border-t border-line pt-10 sm:grid-cols-2">
+    <nav aria-label="More case studies" className="mt-16 grid grid-cols-1 gap-4 border-t border-line pt-10 sm:grid-cols-2">
       {[
         { target: prev, dir: "Previous" as const },
         { target: next, dir: "Next" as const },
@@ -106,18 +106,38 @@ function MoreProjects({ project }: { project: Project }) {
 
 function Section({ n, title, children }: { n: string; title: string; children: ReactNode }) {
   return (
-    <Reveal className="grid gap-4 border-t border-line py-10 md:grid-cols-[180px_1fr] md:gap-10">
+    <Reveal className="grid grid-cols-1 gap-4 border-t border-line py-10 md:grid-cols-[180px_1fr] md:gap-10">
       <h2 className="flex items-baseline gap-3 text-sm font-medium uppercase tracking-[0.18em]">
         <span className="text-muted">{n}</span>
         {title}
       </h2>
-      <div className="max-w-[680px] text-[17px] leading-[1.7] text-[#4A4A54]">{children}</div>
+      <div className="max-w-[680px] text-[17px] leading-[1.7] text-body">{children}</div>
     </Reveal>
   );
 }
 
+/**
+ * True one beat after first paint. The page header and preview render immediately so the open
+ * transition has little to do; the long body below the fold follows once the animation is under way.
+ */
+function useAfterFirstPaint() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setReady(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, []);
+  return ready;
+}
+
 export function CaseStudyPage({ project }: { project: Project }) {
   const cs = project.caseStudy;
+  const bodyReady = useAfterFirstPaint();
   const tools = project.tools;
 
   const backToProjects = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -131,16 +151,16 @@ export function CaseStudyPage({ project }: { project: Project }) {
       <ScrollProgress />
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-onink"
       >
         Skip to content
       </a>
 
-      <header className="border-b border-line bg-white/80">
+      <header className="border-b border-line bg-surface/80">
         <div className="section-shell flex items-center justify-between py-5">
           <a href="#home" className="flex items-center gap-4" aria-label="Angelo Gaspe — home">
             <span className="text-[30px] font-normal leading-none tracking-[-0.04em]">AG</span>
-            <span className="h-7 w-px bg-[#C9C9D1]" aria-hidden="true" />
+            <span className="h-7 w-px bg-line2" aria-hidden="true" />
             <span className="text-[15px] font-medium">Angelo Gaspe</span>
           </a>
           <a href="#projects" onClick={backToProjects} className="group inline-flex items-center gap-2 text-sm font-medium">
@@ -152,7 +172,7 @@ export function CaseStudyPage({ project }: { project: Project }) {
 
       <main id="main" className="section-shell pb-10 pt-14 md:pt-20">
         {!cs.ready && (
-          <div role="note" className="mb-10 rounded-2xl border border-ink bg-lime px-5 py-4 text-sm">
+          <div role="note" className="mb-10 rounded-2xl border border-ink bg-accent text-onaccent px-5 py-4 text-sm">
             <strong className="font-semibold">Draft — not published.</strong> Fill in every TODO in{" "}
             <code>src/data/content.ts</code>, confirm it is safe to share, then set <code>ready: true</code>. This
             banner and page are only visible in local development until then.
@@ -161,14 +181,14 @@ export function CaseStudyPage({ project }: { project: Project }) {
 
         <Reveal>
           <p className="eyebrow">
-            Case study <span className="h-px w-10 bg-[#C9C9D1]" aria-hidden="true" />
+            Case study <span className="h-px w-10 bg-line2" aria-hidden="true" />
           </p>
           <h1 className="mt-7 max-w-[860px] text-[40px] font-medium leading-[1.05] tracking-[-0.04em] md:text-[64px]">
             {project.title}
           </h1>
           <p className="mt-6 max-w-[620px] text-lg leading-relaxed text-body">{project.description}</p>
 
-          <dl className="mt-10 grid gap-6 text-sm sm:grid-cols-3">
+          <dl className="mt-10 grid grid-cols-1 gap-6 text-sm sm:grid-cols-3">
             <div>
               <dt className="text-muted">Role</dt>
               <dd className="mt-1.5 font-medium">{cs.role}</dd>
@@ -181,7 +201,7 @@ export function CaseStudyPage({ project }: { project: Project }) {
               <dt className="text-muted">Tools</dt>
               <dd className="mt-1.5 flex flex-wrap gap-2">
                 {tools.map((t) => (
-                  <span key={t} className="rounded-full border border-line bg-white px-3 py-1 text-xs">
+                  <span key={t} className="rounded-full border border-line bg-surface px-3 py-1 text-xs">
                     {t}
                   </span>
                 ))}
@@ -210,6 +230,8 @@ export function CaseStudyPage({ project }: { project: Project }) {
           </div>
         </div>
 
+        {bodyReady && (
+          <>
         <div className="mt-14">
           <Section n="01" title="Context">
             <p>{cs.problem}</p>
@@ -231,7 +253,7 @@ export function CaseStudyPage({ project }: { project: Project }) {
 
         <MoreProjects project={project} />
 
-        <Reveal className="mt-12 flex flex-wrap items-center justify-between gap-6 rounded-[28px] border border-line bg-gradient-to-br from-[#F7F8F9] to-[#ECEEF0] px-8 py-10">
+        <Reveal className="mt-12 flex flex-wrap items-center justify-between gap-6 rounded-[28px] border border-line bg-gradient-to-br from-sand to-mist px-8 py-10">
           <p className="text-2xl font-medium tracking-[-0.03em]">
             Want something like this? <span className="italic-serif">Let's talk.</span>
           </p>
@@ -240,8 +262,10 @@ export function CaseStudyPage({ project }: { project: Project }) {
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
           </a>
         </Reveal>
+          </>
+        )}
       </main>
-      <Footer />
+      {bodyReady && <Footer />}
     </>
   );
 }

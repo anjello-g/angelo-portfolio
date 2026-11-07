@@ -46,11 +46,11 @@ export function HourlyPreview() {
           {hot === null ? "Now" : "Hour"} · {hourLabel(shown)} · <span className="text-ink">{staffedAt(shown)} on shift</span>
         </span>
         {pin !== null ? (
-          <button type="button" onClick={clear} className="rounded-full border border-line bg-white px-2 py-0.5 text-ink">
+          <button type="button" onClick={clear} className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink">
             Clear
           </button>
         ) : (
-          <span className="rounded-full bg-lime px-2 py-0.5 text-ink">Updated hourly</span>
+          <span className="rounded-full bg-accent text-onaccent px-2 py-0.5">Updated hourly</span>
         )}
       </div>
       <div className="grid flex-1 grid-cols-12 gap-1.5">
@@ -106,7 +106,7 @@ export function VoicePreview() {
       role="group"
       aria-label="Illustrative conversation with a voice waveform. Select the microphone to animate it."
     >
-      <div className="max-w-[70%] rounded-2xl rounded-bl-md bg-white p-3 shadow-tile">
+      <div className="max-w-[70%] rounded-2xl rounded-bl-md bg-surface p-3 shadow-tile">
         <div className="h-2 w-[90%] rounded-full bg-line" />
         <div className="mt-2 h-2 w-[60%] rounded-full bg-line" />
       </div>
@@ -127,7 +127,7 @@ export function VoicePreview() {
         aria-label="Toggle voice demo"
         onClick={() => setListening((v) => !v)}
         className={`ml-auto flex max-w-[70%] items-center gap-2 rounded-2xl rounded-br-md p-3 text-[10px] font-medium transition-colors ${
-          listening ? "bg-ink text-white" : "bg-lime text-ink"
+          listening ? "bg-ink text-onink" : "bg-accent text-onaccent"
         }`}
       >
         <Mic size={14} aria-hidden="true" />
@@ -152,18 +152,18 @@ export function ShopPreview() {
       aria-label="Illustrative online bookstore grid. Select a book to add it to the bag."
     >
       <div className="flex items-center gap-2">
-        <div className="h-7 flex-1 rounded-full border border-line bg-white" />
+        <div className="h-7 flex-1 rounded-full border border-line bg-surface" />
         <motion.div
           key={bag.length}
           initial={{ scale: bag.length ? 1.25 : 1 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 420, damping: 18 }}
-          className="relative grid h-7 w-7 place-items-center rounded-full bg-ink text-white"
+          className="relative grid h-7 w-7 place-items-center rounded-full bg-ink text-onink"
           aria-live="polite"
         >
           <ShoppingBag size={13} aria-hidden="true" />
           {bag.length > 0 && (
-            <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-lime px-1 text-[9px] font-semibold text-ink">
+            <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent text-onaccent px-1 text-[9px] font-semibold">
               {bag.length}
             </span>
           )}
@@ -193,7 +193,7 @@ export function ShopPreview() {
                 style={{ background: c }}
               >
                 {inBag && (
-                  <span className="absolute right-1 top-1 rounded-full bg-ink px-1.5 py-0.5 text-[8px] font-medium text-white">
+                  <span className="absolute right-1 top-1 rounded-full bg-ink px-1.5 py-0.5 text-[8px] font-medium text-onink">
                     Added
                   </span>
                 )}

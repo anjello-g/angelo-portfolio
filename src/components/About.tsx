@@ -9,7 +9,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 function Credentials() {
   return (
-    <Reveal className="mt-16 grid gap-6 lg:grid-cols-2">
+    <Reveal className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div className="glass-card p-7">
         <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em]">
           <GraduationCap size={18} aria-hidden="true" />
@@ -23,13 +23,13 @@ function Credentials() {
           {education.honors.map((h, i) => (
             <motion.li
               key={h}
-              className="group flex items-center gap-3 rounded-xl border border-line bg-white px-4 py-3 text-sm transition-colors hover:border-ink"
+              className="group flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm transition-colors hover:border-ink"
               initial={{ opacity: 0, x: -12 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.45, delay: i * 0.1, ease }}
             >
-              <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-lime transition-transform duration-300 group-hover:rotate-[-12deg] group-hover:scale-110">
+              <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-accent text-onaccent transition-transform duration-300 group-hover:rotate-[-12deg] group-hover:scale-110">
                 <Award size={14} aria-hidden="true" />
               </span>
               {h}
@@ -71,10 +71,10 @@ function Credentials() {
 export function About() {
   return (
     <section id="about" className="section-shell py-16 md:py-20">
-      <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] lg:grid-cols-[1fr_0.9fr_1.35fr] lg:gap-10">
+      <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.1fr_1fr] lg:grid-cols-[1fr_0.9fr_1.35fr] lg:gap-10">
         <Reveal>
           <p className="eyebrow">
-            About me <span className="h-px w-[60px] bg-[#C9C9D1]" aria-hidden="true" />
+            About me <span className="h-px w-[60px] bg-line2" aria-hidden="true" />
           </p>
           <h2 className="mt-7 text-[34px] font-medium leading-[1.1] tracking-[-0.035em] md:text-[46px]">
             A Developer who turns ideas into <span className="italic-serif">impact.</span>
@@ -98,7 +98,7 @@ export function About() {
 
         <Reveal
           delay={0.16}
-          className="md:col-span-2 lg:col-span-1 lg:border-l lg:border-[#DCDCE2] lg:pl-10 lg:pt-12"
+          className="md:col-span-2 lg:col-span-1 lg:border-l lg:border-line2 lg:pl-10 lg:pt-12"
         >
           <ul className="flex flex-wrap gap-x-10 gap-y-8">
             {stats.map((s) => (

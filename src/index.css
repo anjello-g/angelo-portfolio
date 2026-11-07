@@ -2,10 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Colour system. Space-separated RGB channels so Tailwind opacity modifiers (bg-ink/30) keep working.
+ * Palette: Deep Navy / Midnight / Ocean / Storm / Blue Slate / Dusk / Foggy / Cloud / Mist / Arctic,
+ * plus Teal #567C8D and Beige #F5EFEB, with an Amber accent as the blue complement.
+ */
+@layer base {
+  :root {
+    color-scheme: light;
+    --paper: 242 246 251; /* #F2F6FB Arctic Haze */
+    --surface: 255 255 255; /* #FFFFFF */
+    --ink: 10 27 46; /* #0A1B2E Deep Navy */
+    --onink: 255 255 255;
+    --body: 52 80 109; /* #34506D Storm Blue */
+    --muted: 77 107 138; /* #4D6B8A */
+    --faint: 122 140 166; /* #7A8CA6 Dusk Blue */
+    --line: 211 221 233; /* #D3DDE9 */
+    --line2: 196 210 225; /* #C4D2E1 Cloud Blue */
+    --mist: 225 232 240; /* #E1E8F0 Mist Blue */
+    --sand: 245 239 235; /* #F5EFEB Beige */
+    --band: 10 27 46; /* Skills band */
+    --accent: 247 178 51; /* #F7B233 Amber */
+    --accent-deep: 224 138 0; /* #E08A00 Deep Amber */
+    --onaccent: 10 27 46;
+    --shadow: 10 27 46;
+    /* hero / contact decoration */
+    --arc-1: 255 255 255;
+    --arc-2: 225 232 240;
+    --arc-3: 196 210 225;
+    --glass-1: 255 255 255;
+    --glass-2: 196 210 225;
+    --glass-3: 122 140 166;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: 10 27 46; /* #0A1B2E Deep Navy */
+    --surface: 17 42 70; /* #112A46 Midnight Blue */
+    --ink: 242 246 251; /* #F2F6FB Arctic Haze */
+    --onink: 10 27 46;
+    --body: 196 210 225; /* #C4D2E1 Cloud Blue */
+    --muted: 161 178 196; /* #A1B2C4 Foggy Blue */
+    --faint: 122 140 166; /* #7A8CA6 */
+    --line: 27 59 90; /* #1B3B5A Ocean Depth */
+    --line2: 52 80 109; /* #34506D Storm Blue */
+    --mist: 17 42 70;
+    --sand: 17 42 70;
+    --band: 17 42 70;
+    --accent: 255 193 77; /* #FFC14D Amber */
+    --accent-deep: 255 181 71; /* #FFB547 */
+    --onaccent: 10 27 46;
+    --shadow: 0 0 0;
+    --arc-1: 27 59 90;
+    --arc-2: 17 42 70;
+    --arc-3: 10 27 46;
+    --glass-1: 85 115 146;
+    --glass-2: 52 80 109;
+    --glass-3: 27 59 90;
+  }
+  /* Forces light tokens inside a dark page (used for the mock "screens" in project previews). */
+  .theme-light {
+    color-scheme: light;
+    --paper: 242 246 251;
+    --surface: 255 255 255;
+    --ink: 10 27 46;
+    --onink: 255 255 255;
+    --body: 52 80 109;
+    --muted: 77 107 138;
+    --faint: 122 140 166;
+    --line: 211 221 233;
+    --line2: 196 210 225;
+    --mist: 225 232 240;
+    --accent: 247 178 51;
+    --accent-deep: 224 138 0;
+    --onaccent: 10 27 46;
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 88px;
+    /* Never let the page pan sideways; "clip" (unlike "hidden") keeps position: sticky working. */
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -13,16 +92,16 @@
     }
   }
   body {
-    @apply bg-white font-sans text-ink antialiased;
+    @apply min-w-0 overflow-x-clip bg-paper font-sans text-ink antialiased;
   }
   :focus-visible {
-    outline: 2px solid #14161a;
+    outline: 2px solid rgb(var(--ink));
     outline-offset: 3px;
     border-radius: 6px;
   }
   ::selection {
-    background: #c5e86c;
-    color: #14161a;
+    background: rgb(var(--accent));
+    color: rgb(var(--onaccent));
   }
 }
 
@@ -37,36 +116,34 @@
     @apply font-serif font-normal italic text-muted;
   }
   .btn-dark {
-    @apply inline-flex items-center gap-3.5 rounded-full bg-ink px-7 py-4 text-[15px] font-medium text-white shadow-cta transition-transform duration-300 hover:-translate-y-0.5;
+    @apply inline-flex items-center gap-3.5 rounded-full bg-ink px-7 py-4 text-[15px] font-medium text-onink shadow-cta transition-transform duration-300 hover:-translate-y-0.5;
   }
   .glass-card {
-    @apply rounded-2xl border border-line bg-white/90 shadow-card;
+    @apply rounded-2xl border border-line bg-surface/90 shadow-card;
   }
 }
 
-/* Page transition: the project preview morphs between its card and the case-study header. */
-::view-transition-group(project-preview) {
-  animation-duration: 0.65s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+/* Page transition: the incoming page eases in. Only opacity and transform animate (GPU-friendly). */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
-::view-transition-old(project-preview),
-::view-transition-new(project-preview) {
-  height: 100%;
-  object-fit: cover;
-}
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.35s;
+.page-enter {
+  animation: page-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
+  .page-enter {
+    animation: none;
   }
 }
 
 /* Focus ring that stays visible on the dark Skills band. */
 .dark-surface :focus-visible {
-  outline-color: #c5e86c;
+  outline-color: rgb(var(--accent));
 }

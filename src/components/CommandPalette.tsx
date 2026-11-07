@@ -7,11 +7,14 @@ import {
   ExternalLink,
   FileText,
   Hash,
+  Moon,
   Search,
   SlidersHorizontal,
+  Sun,
 } from "lucide-react";
 import { navItems, profile, projects, skills, type SkillId } from "../data/content";
 import { canOpenCaseStudy } from "../lib/route";
+import { useTheme } from "../lib/useTheme";
 
 interface Command {
   id: string;
@@ -41,6 +44,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
   const [toast, setToast] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const commands = useMemo<Command[]>(() => {
     const go = (id: string) => () => {
@@ -96,6 +100,14 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
     }
     list.push(
       {
+        id: "theme",
+        group: "Actions",
+        label: theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+        hint: "Theme",
+        icon: theme === "dark" ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />,
+        run: () => toggleTheme(),
+      },
+      {
         id: "email",
         group: "Actions",
         label: "Copy email address",
@@ -126,7 +138,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
       },
     );
     return list;
-  }, [onSelectSkill, reduced]);
+  }, [onSelectSkill, reduced, theme, toggleTheme]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -211,7 +223,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
               aria-modal="true"
               aria-label="Command palette"
               onKeyDown={onKeyDown}
-              className="relative w-full max-w-[580px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_40px_80px_-30px_rgba(20,22,26,0.45)]"
+              className="relative w-full max-w-[580px] overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_40px_80px_-30px_rgb(var(--shadow)/0.45)]"
               initial={reduced ? false : { opacity: 0, y: -14, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduced ? undefined : { opacity: 0, y: -8, scale: 0.98 }}
@@ -229,7 +241,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
                   aria-activedescendant={results[index] ? `cmd-${results[index].id}` : undefined}
                   aria-label="Search sections, projects and actions"
                   placeholder="Jump to a section, project or skill…"
-                  className="h-14 w-full bg-transparent text-[15px] outline-none placeholder:text-[#8A909A]"
+                  className="h-14 w-full bg-transparent text-[15px] outline-none placeholder:text-faint"
                 />
                 <kbd className="hidden flex-none rounded-md border border-line px-1.5 py-0.5 text-[11px] text-muted sm:block">
                   Esc
@@ -272,7 +284,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
                         )}
                         <span
                           className={`relative grid h-7 w-7 flex-none place-items-center rounded-lg transition-colors ${
-                            active ? "bg-lime" : "bg-mist"
+                            active ? "bg-accent text-onaccent" : "bg-mist"
                           }`}
                         >
                           {c.icon}
@@ -305,7 +317,7 @@ export function CommandPalette({ open, onClose, onSelectSkill }: PaletteProps) {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
-              className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white shadow-cta"
+              className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-onink shadow-cta"
             >
               {toast}
             </motion.span>

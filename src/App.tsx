@@ -30,9 +30,13 @@ export default function App() {
   return (
     <>
       {openProject ? (
-        <CaseStudyPage project={openProject} />
+        <div key={openProject.id} className="page-enter">
+          <CaseStudyPage project={openProject} />
+        </div>
       ) : (
-        <Home selectedSkill={selectedSkill} onSelectSkill={setSelectedSkill} />
+        <div key="home" className="page-enter">
+          <Home selectedSkill={selectedSkill} onSelectSkill={setSelectedSkill} />
+        </div>
       )}
       <CursorLabel />
     </>

@@ -50,7 +50,7 @@ function Accent({ children, first }: { children: ReactNode; first: boolean }) {
         <motion.path
           d="M3 9 C 70 2, 150 13, 297 5"
           fill="none"
-          stroke="#A6E22E"
+          style={{ stroke: "rgb(var(--accent-deep))" }}
           strokeWidth="5"
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
@@ -125,7 +125,7 @@ export function Hero() {
   const my = useMotionValue(-1000);
   const nx = useMotionValue(0);
   const ny = useMotionValue(0);
-  const spotlight = useMotionTemplate`radial-gradient(460px circle at ${mx}px ${my}px, rgba(197,232,108,0.32), rgba(197,232,108,0) 65%)`;
+  const spotlight = useMotionTemplate`radial-gradient(460px circle at ${mx}px ${my}px, rgb(var(--accent) / 0.3), rgb(var(--accent) / 0) 65%)`;
 
   // No cursor on touch screens: the glass shape and chips sway with scroll instead.
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
@@ -159,8 +159,8 @@ export function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute -right-64 top-36 hidden h-[1100px] w-[1100px] rounded-full md:block"
         style={{
-          background: "radial-gradient(circle at 30% 30%, #FFFFFF 0%, #EDEDF1 55%, #E4E4EA 100%)",
-          boxShadow: "inset 0 2px 0 rgba(255,255,255,0.9), 0 -20px 80px rgba(160,160,180,0.18)",
+          background: "radial-gradient(circle at 30% 30%, rgb(var(--arc-1)) 0%, rgb(var(--arc-2)) 55%, rgb(var(--arc-3)) 100%)",
+          boxShadow: "inset 0 2px 0 rgb(var(--arc-1) / 0.9), 0 -20px 80px rgb(var(--faint) / 0.18)",
         }}
       />
       {/* cursor spotlight */}
@@ -172,7 +172,7 @@ export function Hero() {
       {/* soft fade so the arc blends into the next section */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-paper"
       />
       {/* glass shape */}
       <div
@@ -188,11 +188,11 @@ export function Hero() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
-          className="inline-flex items-center gap-2.5 rounded-full border border-line bg-white/75 px-4 py-2 text-[13px] text-body"
+          className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/75 px-4 py-2 text-[13px] text-body"
         >
-          <span className="h-2 w-2 rounded-full bg-lime-deep" />
+          <span className="h-2 w-2 rounded-full bg-accent-deep" />
           {profile.role}
-          <span className="text-[#9A9AA4]">·</span>
+          <span className="text-faint">·</span>
           {profile.tagline}
         </motion.div>
 
@@ -265,8 +265,8 @@ export function Hero() {
           className="mt-12 flex items-center gap-3 text-sm text-muted"
         >
           <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-deep opacity-60 motion-reduce:animate-none" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-lime-deep" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-deep opacity-60 motion-reduce:animate-none" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent-deep" />
           </span>
           Currently Business Intelligence Developer at {profile.employer}
         </motion.p>

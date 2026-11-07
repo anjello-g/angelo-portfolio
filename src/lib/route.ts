@@ -29,57 +29,28 @@ export function useCaseStudyRoute(): { projectId: string | null; project: Projec
   return { projectId, project };
 }
 
-/** Frame element that morphs between a project card and its case-study header. */
-const frameOf = (id?: string) =>
-  id ? document.querySelector<HTMLElement>(`[data-preview-frame="${id}"]`) : null;
-
 interface NavigateOptions {
-  /** Project whose preview frame is on screen now (the element to morph from). */
+  /** Kept for call-site compatibility; the page transition no longer morphs between frames. */
   from?: string;
-  /** Project whose preview frame will be on screen next (the element to morph to). */
   to?: string;
 }
 
-type ViewTransitionDocument = Document & {
-  startViewTransition?: (update: () => void) => { finished: Promise<unknown> };
-};
-
 /**
- * Client-side navigation between the home page and case studies. Where the browser supports
- * View Transitions, the project preview morphs into place; elsewhere (or with reduced motion)
- * it simply switches pages. Falls back to a normal hash change if anything is missing.
+ * Client-side navigation between the home page and case studies. The page swaps immediately and the
+ * incoming page fades in (see `.page-enter` in index.css). That is a compositor-only animation, so it
+ * stays smooth, unlike a full-page View Transition which snapshots and recomposites the whole document.
  */
-export function navigate(hash: string, { from, to }: NavigateOptions = {}) {
-  const doc = document as ViewTransitionDocument;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const swap = () => {
-    flushSync(() => {
-      window.history.pushState(null, "", hash);
-      window.dispatchEvent(new Event(ROUTE_EVENT));
-    });
-    const id = hash.slice(1);
-    if (hash.startsWith("#/")) {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    } else if (id) {
-      document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
-    frameOf(to)?.style.setProperty("view-transition-name", "project-preview");
-  };
-
-  if (!doc.startViewTransition || reduced) {
-    swap();
-    return;
+export function navigate(hash: string, _options: NavigateOptions = {}) {
+  flushSync(() => {
+    window.history.pushState(null, "", hash);
+    window.dispatchEvent(new Event(ROUTE_EVENT));
+  });
+  const id = hash.slice(1);
+  if (hash.startsWith("#/")) {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  } else if (id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "instant" });
+  } else {
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
-
-  const oldFrame = frameOf(from);
-  oldFrame?.style.setProperty("view-transition-name", "project-preview");
-  const transition = doc.startViewTransition(swap);
-  const cleanup = () => {
-    oldFrame?.style.removeProperty("view-transition-name");
-    frameOf(to)?.style.removeProperty("view-transition-name");
-  };
-  transition.finished.then(cleanup, cleanup);
 }

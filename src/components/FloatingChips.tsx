@@ -53,7 +53,7 @@ function Chip({ chip, nx, ny }: { chip: ChipDef; nx: MotionValue<number>; ny: Mo
       transition={{ duration: 0.6, delay: 0.9 + chip.delay * 0.25, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="flex animate-float items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/70 px-4 py-2.5 text-[13px] font-medium shadow-tile backdrop-blur-md motion-reduce:animate-none"
+        className="flex animate-float items-center gap-2 whitespace-nowrap rounded-full border border-surface/80 bg-surface/70 px-4 py-2.5 text-[13px] font-medium shadow-tile backdrop-blur-md motion-reduce:animate-none"
         style={{ animationDelay: `${chip.delay}s` }}
       >
         <chip.Icon size={15} aria-hidden="true" />

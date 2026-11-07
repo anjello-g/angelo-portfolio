@@ -44,7 +44,7 @@ export function CursorLabel() {
   return (
     <motion.div aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[60]" style={{ x: sx, y: sy }}>
       <motion.span
-        className="block origin-top-left whitespace-nowrap rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-white shadow-cta"
+        className="block origin-top-left whitespace-nowrap rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-onink shadow-cta"
         initial={false}
         animate={{ scale: visible ? 1 : 0.4, opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}

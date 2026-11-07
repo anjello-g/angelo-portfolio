@@ -72,7 +72,7 @@ export function DashboardPreview() {
       aria-label="Illustrative headcount dashboard. Select a week or a program to filter the other charts."
     >
       <div className="flex min-h-0 flex-col gap-2">
-        <div className="flex h-4 items-center justify-between text-[9px] text-white/55">
+        <div className="flex h-4 items-center justify-between text-[9px] text-onink/55">
           <span aria-live="polite">
             Week {w + 1} · {prog === null ? "All programs" : PROGRAMS[prog].name}
           </span>
@@ -83,7 +83,7 @@ export function DashboardPreview() {
                 setWeek(null);
                 setProg(null);
               }}
-              className="rounded-full bg-white/15 px-2 py-0.5 font-medium text-white hover:bg-white/25"
+              className="rounded-full bg-surface/15 px-2 py-0.5 font-medium text-onink hover:bg-surface/25"
             >
               Clear
             </button>
@@ -92,14 +92,14 @@ export function DashboardPreview() {
 
         <div className="flex gap-1.5">
           {tiles.map((t) => (
-            <div key={t.label} className="min-w-0 flex-1 rounded-md bg-white/[0.07] px-2 py-1.5">
-              <div className="truncate text-[8px] uppercase tracking-wider text-white/50">{t.label}</div>
+            <div key={t.label} className="min-w-0 flex-1 rounded-md bg-surface/[0.07] px-2 py-1.5">
+              <div className="truncate text-[8px] uppercase tracking-wider text-onink/50">{t.label}</div>
               <motion.div
                 key={t.value}
                 initial={{ opacity: 0.4, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25 }}
-                className="text-[13px] font-medium tabular-nums text-white"
+                className="text-[13px] font-medium tabular-nums text-onink"
               >
                 {t.value}
               </motion.div>
@@ -107,7 +107,7 @@ export function DashboardPreview() {
           ))}
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-white/5 px-2.5 pb-1.5 pt-2.5">
+        <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-surface/5 px-2.5 pb-1.5 pt-2.5">
           <div className="flex min-h-0 flex-1 items-stretch gap-1.5">
             {HEADCOUNT.map((row, i) => {
               const visible = sum(progs.map((p) => row[p]));
@@ -141,9 +141,9 @@ export function DashboardPreview() {
               );
             })}
           </div>
-          <div className="mt-1 flex gap-1.5 text-center text-[8px] text-white/40" aria-hidden="true">
+          <div className="mt-1 flex gap-1.5 text-center text-[8px] text-onink/40" aria-hidden="true">
             {HEADCOUNT.map((_, i) => (
-              <span key={i} className={`flex-1 ${week === i ? "font-medium text-white" : ""}`}>
+              <span key={i} className={`flex-1 ${week === i ? "font-medium text-onink" : ""}`}>
                 W{i + 1}
               </span>
             ))}
@@ -152,7 +152,7 @@ export function DashboardPreview() {
       </div>
 
       <div className="flex min-h-0 flex-col gap-2">
-        <div className="flex flex-1 items-center justify-center rounded-lg bg-white/5">
+        <div className="flex flex-1 items-center justify-center rounded-lg bg-surface/5">
           <div className="relative">
             <svg width="92" height="92" viewBox="0 0 84 84" aria-hidden="true">
               <circle cx="42" cy="42" r="28" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
@@ -175,13 +175,13 @@ export function DashboardPreview() {
                 ))}
               </g>
             </svg>
-            <div className="pointer-events-none absolute inset-0 grid place-items-center text-[11px] font-medium tabular-nums text-white">
+            <div className="pointer-events-none absolute inset-0 grid place-items-center text-[11px] font-medium tabular-nums text-onink">
               {prog === null ? "All" : `${Math.round(arcs[prog].frac * 100)}%`}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 rounded-lg bg-white/5 p-1.5" role="group" aria-label="Filter by program">
+        <div className="flex flex-col gap-1 rounded-lg bg-surface/5 p-1.5" role="group" aria-label="Filter by program">
           {PROGRAMS.map((p, i) => (
             <button
               key={p.name}
@@ -189,7 +189,7 @@ export function DashboardPreview() {
               aria-pressed={prog === i}
               onClick={() => setProg(prog === i ? null : i)}
               className={`flex items-center gap-2 rounded px-1.5 py-1 text-left text-[9px] transition-colors ${
-                prog === i ? "bg-white text-ink" : "text-white/70 hover:bg-white/10"
+                prog === i ? "bg-surface text-ink" : "text-onink/70 hover:bg-surface/10"
               }`}
             >
               <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
@@ -344,7 +344,7 @@ export function WorkflowPreview() {
           <button
             type="button"
             onClick={clear}
-            className="pointer-events-auto rounded-full border border-line bg-white px-2 py-0.5 font-medium text-ink"
+            className="pointer-events-auto rounded-full border border-line bg-surface px-2 py-0.5 font-medium text-ink"
           >
             Clear
           </button>
@@ -397,7 +397,7 @@ export function KpiPreview() {
     >
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-medium text-muted">Program KPIs</span>
-        <div className="flex rounded-full border border-line bg-white p-0.5 text-[10px] font-medium" role="group" aria-label="Period">
+        <div className="flex rounded-full border border-line bg-surface p-0.5 text-[10px] font-medium" role="group" aria-label="Period">
           {(["daily", "weekly"] as const).map((m) => (
             <button
               key={m}
@@ -405,7 +405,7 @@ export function KpiPreview() {
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
               className={`rounded-full px-2.5 py-0.5 capitalize transition-colors ${
-                mode === m ? "bg-ink text-white" : "text-muted hover:text-ink"
+                mode === m ? "bg-ink text-onink" : "text-muted hover:text-ink"
               }`}
             >
               {m}
@@ -426,7 +426,7 @@ export function KpiPreview() {
               aria-pressed={on}
               onClick={() => setFocus(i)}
               className={`flex min-h-0 flex-col justify-between rounded-[10px] border p-2.5 text-left transition-colors duration-300 ${
-                on ? "border-ink bg-lime" : "border-line bg-white hover:border-[#C9C9D1]"
+                on ? "border-ink bg-accent text-onaccent" : "border-line bg-surface hover:border-line2"
               }`}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}

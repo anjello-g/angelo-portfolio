@@ -30,7 +30,7 @@ function ProjectCard({ project }: { project: Project }) {
       <Tilt className="h-full">
         {/* The title link stretches over the whole card; the preview sits above it so its charts stay clickable. */}
         <div
-          className="group glass-card relative flex h-full flex-col gap-5 p-4 transition-colors duration-300 hover:border-[#C9C9D1]"
+          className="group glass-card relative flex h-full flex-col gap-5 p-4 transition-colors duration-300 hover:border-line2"
           data-cursor={canOpen ? "View" : undefined}
         >
           <div
@@ -51,7 +51,7 @@ function ProjectCard({ project }: { project: Project }) {
               )}
             </div>
             {showDraft && (
-              <span className="absolute left-3 top-3 rounded-full bg-lime px-2.5 py-1 text-[11px] font-medium text-ink">
+              <span className="absolute left-3 top-3 rounded-full bg-accent text-onaccent px-2.5 py-1 text-[11px] font-medium">
                 Draft (dev only)
               </span>
             )}
@@ -75,8 +75,8 @@ function ProjectCard({ project }: { project: Project }) {
               <p className="mt-2 text-[13px] leading-normal text-muted">{project.description}</p>
             </div>
             <span
-              className={`grid h-9 w-9 flex-none place-items-center rounded-full border border-[#D4D4DB] transition-colors duration-300 ${
-                canOpen ? "group-hover:border-ink group-hover:bg-ink group-hover:text-white" : "opacity-60"
+              className={`grid h-9 w-9 flex-none place-items-center rounded-full border border-line2 transition-colors duration-300 ${
+                canOpen ? "group-hover:border-ink group-hover:bg-ink group-hover:text-onink" : "opacity-60"
               }`}
               aria-hidden="true"
             >
@@ -104,10 +104,10 @@ export function Projects({ selected, onClear }: ProjectsProps) {
 
   return (
     <section id="projects" className="section-shell py-14">
-      <div className="grid items-start gap-10 lg:grid-cols-[1fr_3fr] lg:gap-12">
+      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_3fr] lg:gap-12">
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <p className="eyebrow">
-            Featured projects <span className="h-px w-10 bg-[#C9C9D1]" aria-hidden="true" />
+            Featured projects <span className="h-px w-10 bg-line2" aria-hidden="true" />
           </p>
           <h2 className="mt-7 text-[30px] font-medium leading-[1.15] tracking-[-0.03em] md:text-[40px]">
             Building solutions{" "}
@@ -119,7 +119,7 @@ export function Projects({ selected, onClear }: ProjectsProps) {
               <button
                 type="button"
                 onClick={onClear}
-                className="inline-flex items-center gap-2 rounded-full border border-ink bg-lime px-4 py-2 text-sm font-medium"
+                className="inline-flex items-center gap-2 rounded-full border border-ink bg-accent text-onaccent px-4 py-2 text-sm font-medium"
               >
                 Filtered by {selectedLabel}
                 <X size={14} aria-hidden="true" />
@@ -140,7 +140,7 @@ export function Projects({ selected, onClear }: ProjectsProps) {
 
         <div>
           {visible.length === 0 && (
-            <p className="glass-card p-7 text-[15px] text-[#4A4A54]">
+            <p className="glass-card p-7 text-[15px] text-body">
               No featured project is tagged with {selectedLabel} yet. You can find where I've used it in the
               Experience section.{" "}
               <button type="button" onClick={onClear} className="font-medium underline underline-offset-4">
@@ -148,7 +148,7 @@ export function Projects({ selected, onClear }: ProjectsProps) {
               </button>
             </p>
           )}
-          <div ref={gridRef} className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div ref={gridRef} className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {visible.map((p) => (
                 <ProjectCard key={p.id} project={p} />

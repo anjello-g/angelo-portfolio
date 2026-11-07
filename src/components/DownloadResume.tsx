@@ -5,7 +5,7 @@ import { profile } from "../data/content";
 
 /**
  * Downloads the resume PDF. On click the icon morphs into a check mark and the
- * button turns lime for a moment, so the visitor knows it worked.
+ * button turns accent-coloured for a moment, so the visitor knows it worked.
  */
 export function DownloadResume({ block = false }: { block?: boolean }) {
   const [done, setDone] = useState(false);
@@ -25,7 +25,7 @@ export function DownloadResume({ block = false }: { block?: boolean }) {
         timer.current = window.setTimeout(() => setDone(false), 2400);
       }}
       className={`group flex items-center gap-2.5 rounded-full border border-ink px-5 py-2.5 text-sm font-medium transition-colors duration-300 ${
-        done ? "bg-lime text-ink" : "bg-white/50 hover:bg-ink hover:text-white"
+        done ? "bg-accent text-onaccent" : "bg-surface/50 hover:bg-ink hover:text-onink"
       } ${block ? "justify-center py-3.5" : ""}`}
     >
       Download Resume

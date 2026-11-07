@@ -8,7 +8,18 @@
       name="description"
       content="Angelo Gaspe is a Business Intelligence Developer who builds Power BI and DOMO dashboards, automates reporting with Python, and turns workforce data into decisions."
     />
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" content="#F2F6FB" />
+    <script>
+      // Apply the saved theme (light by default) before first paint so there is no flash.
+      (function () {
+        try {
+          var saved = localStorage.getItem("theme");
+          var dark = saved === "dark"; // light is the default
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#0A1B2E" : "#F2F6FB");
+        } catch (e) {}
+      })();
+    </script>
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Angelo Gaspe — Business Intelligence Developer" />
     <meta

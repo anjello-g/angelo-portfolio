@@ -4,12 +4,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#14161A",
-        body: "#363B43",
-        muted: "#626872",
-        line: "#E6E8EB",
-        mist: "#F5F6F7",
-        lime: { DEFAULT: "#C5E86C", deep: "#A6E22E" },
+        // Semantic tokens: the actual values live in src/index.css so light/dark can swap them.
+        paper: "rgb(var(--paper) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        onink: "rgb(var(--onink) / <alpha-value>)",
+        body: "rgb(var(--body) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        faint: "rgb(var(--faint) / <alpha-value>)",
+        line: "rgb(var(--line) / <alpha-value>)",
+        line2: "rgb(var(--line2) / <alpha-value>)",
+        mist: "rgb(var(--mist) / <alpha-value>)",
+        sand: "rgb(var(--sand) / <alpha-value>)",
+        band: "rgb(var(--band) / <alpha-value>)",
+        accent: {
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          deep: "rgb(var(--accent-deep) / <alpha-value>)",
+        },
+        onaccent: "rgb(var(--onaccent) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
@@ -30,9 +42,9 @@ export default {
         wave: "wave 1s ease-in-out infinite",
       },
       boxShadow: {
-        card: "0 24px 48px -30px rgba(20,22,26,0.22)",
-        tile: "0 8px 20px -14px rgba(20,22,26,0.2)",
-        cta: "0 12px 28px -10px rgba(20,22,26,0.5), inset 0 1px 0 rgba(255,255,255,0.18)",
+        card: "0 24px 48px -30px rgb(var(--shadow) / 0.22)",
+        tile: "0 8px 20px -14px rgb(var(--shadow) / 0.2)",
+        cta: "0 12px 28px -10px rgb(var(--shadow) / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.18)",
       },
     },
   },
