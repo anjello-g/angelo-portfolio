@@ -1,27 +1,33 @@
-import type { MouseEvent, ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import {
+  AnimatePresence,
   motion,
   useMotionTemplate,
   useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
+  useScroll,
 } from "motion/react";
 import { ArrowRight, Mail } from "lucide-react";
-import { profile } from "../data/content";
+import { profile, taglines, type Tagline } from "../data/content";
 import { GlassShape } from "./GlassShape";
 import { FloatingChips } from "./FloatingChips";
 import { Magnetic } from "./Magnetic";
+import { useCoarsePointer } from "../lib/useCoarsePointer";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/** One headline line, revealed upward from behind a mask. */
-function MaskedLine({ children, delay }: { children: ReactNode; delay: number }) {
+/** One headline line. It slides up into view from behind a mask and slides out the top when replaced. */
+function MaskedLine({ children, index, first }: { children: ReactNode; index: number; first: boolean }) {
   return (
     <span className="-mb-[0.1em] block overflow-hidden pb-[0.1em]">
       <motion.span
         className="block"
-        initial={{ y: "105%" }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.7, delay, ease }}
+        variants={{
+          enter: { y: "105%" },
+          center: { y: 0, transition: { duration: 0.7, delay: first ? 0.1 + index * 0.1 : 0.05 + index * 0.1, ease } },
+          exit: { y: "-105%", transition: { duration: 0.45, delay: index * 0.06, ease } },
+        }}
       >
         {children}
       </motion.span>
@@ -29,14 +35,105 @@ function MaskedLine({ children, delay }: { children: ReactNode; delay: number })
   );
 }
 
+/** The italic last word(s), with the hand-drawn underline that redraws each time. */
+function Accent({ children, first }: { children: ReactNode; first: boolean }) {
+  return (
+    <span className="italic-serif relative inline-block tracking-[-0.02em]">
+      {children}
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 300 14"
+        preserveAspectRatio="none"
+        className="absolute -bottom-0.5 left-0 h-[0.12em] w-full overflow-visible"
+      >
+        <motion.path
+          d="M3 9 C 70 2, 150 13, 297 5"
+          fill="none"
+          stroke="#A6E22E"
+          strokeWidth="5"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.9, delay: first ? 1.0 : 0.8, ease }}
+        />
+      </svg>
+    </span>
+  );
+}
+
+/** Static copy of a tagline, used invisibly to reserve the height of the tallest one. */
+function GhostTagline({ t }: { t: Tagline }) {
+  return (
+    <span aria-hidden="true" className="invisible block [grid-area:1/1]">
+      <span className="block">{t.line1}</span>
+      <span className="block">
+        {t.lead}
+        <span className="italic-serif tracking-[-0.02em]">{t.accent}</span>
+      </span>
+    </span>
+  );
+}
+
+/** Picks the next headline at a random moment, 6 to 15 seconds apart, never the same one twice in a row. */
+function useRotatingTagline(count: number, paused: boolean) {
+  const [index, setIndex] = useState(0);
+  const [rotated, setRotated] = useState(false);
+
+  useEffect(() => {
+    if (paused || count < 2) return;
+    let timer = 0;
+    let current = 0;
+    let bag: number[] = [];
+
+    const schedule = () => {
+      timer = window.setTimeout(tick, 6000 + Math.random() * 9000);
+    };
+    const tick = () => {
+      if (document.hidden) return schedule(); // don't change while the tab is in the background
+      if (bag.length === 0) {
+        // Shuffle bag: every headline appears once before any repeats.
+        bag = Array.from({ length: count }, (_, i) => i).filter((i) => i !== current);
+        for (let i = bag.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [bag[i], bag[j]] = [bag[j], bag[i]];
+        }
+      }
+      current = bag.pop() as number;
+      setIndex(current);
+      setRotated(true);
+      schedule();
+    };
+
+    schedule();
+    return () => window.clearTimeout(timer);
+  }, [count, paused]);
+
+  return { index, rotated };
+}
+
 export function Hero() {
   const reduced = useReducedMotion();
+  const coarse = useCoarsePointer();
+  const { index: taglineIndex, rotated } = useRotatingTagline(taglines.length, Boolean(reduced));
+  const first = taglineIndex === 0 && !rotated;
+  const tagline = taglines[taglineIndex];
+  const sectionRef = useRef<HTMLElement>(null);
   // Cursor position in px (for the spotlight) and normalised -0.5…0.5 (for parallax).
   const mx = useMotionValue(-1000);
   const my = useMotionValue(-1000);
   const nx = useMotionValue(0);
   const ny = useMotionValue(0);
   const spotlight = useMotionTemplate`radial-gradient(460px circle at ${mx}px ${my}px, rgba(197,232,108,0.32), rgba(197,232,108,0) 65%)`;
+
+  // No cursor on touch screens: the glass shape and chips sway with scroll instead.
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    if (!coarse || reduced) return;
+    nx.set(Math.sin(p * Math.PI * 1.5) * 0.4);
+    ny.set((p - 0.4) * 0.7);
+  });
 
   const onMove = (e: MouseEvent<HTMLElement>) => {
     if (reduced) return;
@@ -56,7 +153,7 @@ export function Hero() {
   };
 
   return (
-    <section id="home" className="relative overflow-hidden" onMouseMove={onMove} onMouseLeave={onLeave}>
+    <section ref={sectionRef} id="home" className="relative overflow-hidden" onMouseMove={onMove} onMouseLeave={onLeave}>
       {/* soft arc */}
       <div
         aria-hidden="true"
@@ -100,32 +197,30 @@ export function Hero() {
         </motion.div>
 
         <h1 className="mt-8 max-w-[820px] text-[48px] font-medium leading-none tracking-[-0.045em] sm:text-[68px] md:text-[84px]">
-          <MaskedLine delay={0.1}>Turning Data</MaskedLine>
-          <MaskedLine delay={0.2}>
-            into Better{" "}
-            <span className="italic-serif relative inline-block tracking-[-0.02em]">
-              Decisions.
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                viewBox="0 0 300 14"
-                preserveAspectRatio="none"
-                className="absolute -bottom-0.5 left-0 h-[0.12em] w-full overflow-visible"
+          {/* Screen readers get one stable headline instead of a changing one. */}
+          <span className="sr-only">{taglines[0].line1} {taglines[0].lead}{taglines[0].accent}</span>
+          <span aria-hidden="true" className="grid">
+            {taglines.map((t) => (
+              <GhostTagline key={t.line1} t={t} />
+            ))}
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={taglineIndex}
+                className="block [grid-area:1/1]"
+                initial="enter"
+                animate="center"
+                exit="exit"
               >
-                <motion.path
-                  d="M3 9 C 70 2, 150 13, 297 5"
-                  fill="none"
-                  stroke="#A6E22E"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.9, delay: 1.0, ease }}
-                />
-              </svg>
-            </span>
-          </MaskedLine>
+                <MaskedLine index={0} first={first}>
+                  {tagline.line1}
+                </MaskedLine>
+                <MaskedLine index={1} first={first}>
+                  {tagline.lead}
+                  <Accent first={first}>{tagline.accent}</Accent>
+                </MaskedLine>
+              </motion.span>
+            </AnimatePresence>
+          </span>
         </h1>
 
         <motion.p

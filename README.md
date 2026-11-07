@@ -39,13 +39,19 @@ Requires Node 20+.
 | Nav | Download Resume turns into a check mark on click; nav hides on scroll down | `DownloadResume.tsx`, `Nav.tsx` |
 | Hero | Glass shape tilts with the cursor and drifts on scroll; spotlight; floating chips | `GlassShape.tsx`, `FloatingChips.tsx` |
 | Hero | A live countdown to the next hourly report (a nod to the hourly executive updates) | `FloatingChips.tsx` |
-| Hero | Headline mask reveal; hand-drawn underline on "Decisions." | `Hero.tsx` |
+| Hero | Headline rotates through six resume-based taglines at random moments (6 to 15 s apart, no immediate repeats); each change slides out the top and the next slides up, with the underline redrawing. Paused with reduced motion or a hidden tab. Edit the list in `taglines` | `Hero.tsx`, `content.ts` |
 | About | Summary lights up word by word as you scroll; stats count up; award and certificate hover effects | `About.tsx`, `ScrollHighlight.tsx`, `CountUp.tsx` |
 | Experience | Timeline line draws as you scroll; click a role to expand it | `Experience.tsx` |
 | Skills | Icons tilt on hover; tabbed toolkit with an animated pill and arrow-key support | `Skills.tsx` |
 | Projects | Cards tilt in 3D with a glare; heat-grid preview highlights columns on hover; waveform animates on hover | `Tilt.tsx`, `previews-more.tsx` |
 | Contact | Copy-email button; magnetic call-to-action | `Contact.tsx`, `Magnetic.tsx` |
-| Page | Scroll-progress bar | `ScrollProgress.tsx` |
+| Projects | Every preview is a working mini-dashboard: click a week or program to cross-filter the headcount charts, switch KPIs between Daily and Weekly, hover or tap an hour in the staffing grid, trace data lineage through the workflow, toggle the voice demo, add books to the bag | `previews.tsx`, `previews-more.tsx` |
+| Projects → case study | The preview morphs into the case-study header (View Transitions API; plain page switch where unsupported). Flow steps draw in on scroll; previous / next links at the bottom | `lib/route.ts`, `CaseStudyPage.tsx` |
+| Skills ↔ Experience ↔ Projects | Selecting a tool dims roles that did not use it, highlights its chips, and filters projects. Tool chips inside a role are clickable too. Each role shows a small strip of the tools it used | `lib/skillMap.ts`, `Experience.tsx`, `Skills.tsx` |
+| Skills | Dark band that opens from an inset card to full width as it scrolls in, with a soft cursor spotlight | `Skills.tsx` |
+| Cursor | Small label that follows the mouse and says what a click does (View, Explore, Copy, Highlight). Add `data-cursor="Label"` to any element | `CursorLabel.tsx` |
+| Touch screens | No hover? Card tilt and glare, the glass shape and the staffing-grid highlight are driven by scroll instead | `Tilt.tsx`, `Hero.tsx`, `lib/useCoarsePointer.ts` |
+| Page | Scroll-progress bar (home and case studies) | `ScrollProgress.tsx` |
 
 Everything switches off for visitors who prefer reduced motion. To tone one down, change its
 strength in that file or remove the component where it is used.

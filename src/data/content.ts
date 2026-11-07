@@ -27,6 +27,25 @@ export const profile = {
   resumeUrl: "/Angelo_Gaspe_Resume.pdf",
 };
 
+// Rotating hero headline. Each one is two lines: `line1`, then `lead` + the italic `accent`.
+// Written from the resume (Power BI / DOMO dashboards, hourly executive updates, Python
+// automation, workforce analytics, software-development background). Edit freely; keep each
+// line under ~20 characters so it fits on one line on a phone. The first one is shown first.
+export interface Tagline {
+  line1: string;
+  lead: string;
+  accent: string;
+}
+
+export const taglines: Tagline[] = [
+  { line1: "Turning Data", lead: "into Better ", accent: "Decisions." },
+  { line1: "Dashboards Leaders", lead: "Use Every ", accent: "Day." },
+  { line1: "Workforce Data,", lead: "Ready by the ", accent: "Hour." },
+  { line1: "Automating the", lead: "Work Behind ", accent: "Reports." },
+  { line1: "Clear Numbers for", lead: "Fast-Moving ", accent: "Teams." },
+  { line1: "Developer Skills,", lead: "Analyst ", accent: "Mindset." },
+];
+
 // CONFIRM: numbers derived from the resume.
 //  - 2+ years: first role Dec 2023 (about 2 years 11 months by Nov 2026)
 //  - 3 countries: freelance clients in the UAE, Germany and the United States

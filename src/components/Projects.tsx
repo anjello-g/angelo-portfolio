@@ -1,8 +1,8 @@
-import { useRef } from "react";
+import { useRef, type MouseEvent } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { ArrowRight, X } from "lucide-react";
 import { projects, skills, type Project, type SkillId } from "../data/content";
-import { canOpenCaseStudy } from "../lib/route";
+import { canOpenCaseStudy, navigate } from "../lib/route";
 import { ProjectPreview } from "./ProjectPreview";
 import { Reveal } from "./Reveal";
 import { Tilt } from "./Tilt";
@@ -10,47 +10,13 @@ import { Tilt } from "./Tilt";
 function ProjectCard({ project }: { project: Project }) {
   const canOpen = canOpenCaseStudy(project);
   const showDraft = import.meta.env.DEV && !project.caseStudy.ready;
+  const href = `#/projects/${project.id}`;
 
-  const inner = (
-    <>
-      <div className="relative h-[250px] overflow-hidden rounded-xl border border-line/70">
-        <div className="h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]">
-          {project.caseStudy.image ? (
-            <img
-              src={project.caseStudy.image}
-              alt={project.caseStudy.imageAlt ?? project.title}
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <ProjectPreview kind={project.preview} />
-          )}
-        </div>
-        {showDraft && (
-          <span className="absolute left-3 top-3 rounded-full bg-lime px-2.5 py-1 text-[11px] font-medium text-ink">
-            Draft (dev only)
-          </span>
-        )}
-      </div>
-      <div className="flex items-end justify-between gap-4 px-1.5 pb-1.5">
-        <div>
-          <h3 className="text-base font-medium">{project.title}</h3>
-          <p className="mt-2 text-[13px] leading-normal text-muted">{project.description}</p>
-        </div>
-        <span
-          className={`grid h-9 w-9 flex-none place-items-center rounded-full border border-[#D4D4DB] transition-colors duration-300 ${
-            canOpen ? "group-hover:border-ink group-hover:bg-ink group-hover:text-white" : "opacity-60"
-          }`}
-          aria-hidden="true"
-        >
-          <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-        </span>
-      </div>
-    </>
-  );
-
-  const cardClass =
-    "group glass-card flex h-full flex-col gap-5 p-4 transition-colors duration-300 hover:border-[#C9C9D1]";
+  const open = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    navigate(href, { from: project.id, to: project.id });
+  };
 
   return (
     <motion.article
@@ -62,13 +28,62 @@ function ProjectCard({ project }: { project: Project }) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       <Tilt className="h-full">
-        {canOpen ? (
-          <a href={`#/projects/${project.id}`} className={cardClass} aria-label={`${project.title} — read the case study`}>
-            {inner}
-          </a>
-        ) : (
-          <div className={cardClass}>{inner}</div>
-        )}
+        {/* The title link stretches over the whole card; the preview sits above it so its charts stay clickable. */}
+        <div
+          className="group glass-card relative flex h-full flex-col gap-5 p-4 transition-colors duration-300 hover:border-[#C9C9D1]"
+          data-cursor={canOpen ? "View" : undefined}
+        >
+          <div
+            data-preview-frame={project.id}
+            data-cursor="Explore"
+            className="relative z-10 h-[250px] overflow-hidden rounded-xl border border-line/70 bg-mist"
+          >
+            <div className="h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+              {project.caseStudy.image ? (
+                <img
+                  src={project.caseStudy.image}
+                  alt={project.caseStudy.imageAlt ?? project.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <ProjectPreview kind={project.preview} />
+              )}
+            </div>
+            {showDraft && (
+              <span className="absolute left-3 top-3 rounded-full bg-lime px-2.5 py-1 text-[11px] font-medium text-ink">
+                Draft (dev only)
+              </span>
+            )}
+          </div>
+          <div className="flex items-end justify-between gap-4 px-1.5 pb-1.5">
+            <div>
+              <h3 className="text-base font-medium">
+                {canOpen ? (
+                  <a
+                    href={href}
+                    onClick={open}
+                    aria-label={`${project.title} — read the case study`}
+                    className="after:absolute after:inset-0 after:content-['']"
+                  >
+                    {project.title}
+                  </a>
+                ) : (
+                  project.title
+                )}
+              </h3>
+              <p className="mt-2 text-[13px] leading-normal text-muted">{project.description}</p>
+            </div>
+            <span
+              className={`grid h-9 w-9 flex-none place-items-center rounded-full border border-[#D4D4DB] transition-colors duration-300 ${
+                canOpen ? "group-hover:border-ink group-hover:bg-ink group-hover:text-white" : "opacity-60"
+              }`}
+              aria-hidden="true"
+            >
+              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+            </span>
+          </div>
+        </div>
       </Tilt>
     </motion.article>
   );

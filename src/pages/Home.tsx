@@ -52,7 +52,7 @@ export function Home({ selectedSkill, onSelectSkill }: HomeProps) {
       <main id="main">
         <Hero />
         <About />
-        <Experience />
+        <Experience selected={selectedSkill} onSelect={onSelectSkill} />
         <Skills selected={selectedSkill} onSelect={onSelectSkill} />
         <Projects selected={selectedSkill} onClear={() => onSelectSkill(null)} />
         <Contact />

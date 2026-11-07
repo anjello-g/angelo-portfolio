@@ -1,13 +1,30 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
-import { ChevronDown } from "lucide-react";
-import { roles } from "../data/content";
+import { ChevronDown, X } from "lucide-react";
+import { roles, skills, type SkillId } from "../data/content";
+import { projectsForSkill, roleUsesSkill, skillIdForTool, skillsForRole } from "../lib/skillMap";
 import { Reveal } from "./Reveal";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export function Experience() {
+interface ExperienceProps {
+  selected: SkillId | null;
+  onSelect: (id: SkillId | null) => void;
+}
+
+export function Experience({ selected, onSelect }: ExperienceProps) {
   const [openId, setOpenId] = useState<string | null>(roles[0].id);
+  const selectedLabel = skills.find((s) => s.id === selected)?.label;
+  const matchCount = selected ? roles.filter((r) => roleUsesSkill(r, selected)).length : 0;
+  const focusing = selected !== null && matchCount > 0;
+
+  // Picking a tool elsewhere opens the first role that used it, so the highlight is visible.
+  useEffect(() => {
+    if (!selected) return;
+    const first = roles.find((r) => roleUsesSkill(r, selected));
+    if (first) setOpenId((cur) => (cur && roleUsesSkill(roles.find((r) => r.id === cur)!, selected) ? cur : first.id));
+  }, [selected]);
+
   const listRef = useRef<HTMLOListElement>(null);
   // The timeline line fills in as the visitor scrolls down through it.
   const { scrollYProgress } = useScroll({ target: listRef, offset: ["start 0.65", "end 0.55"] });
@@ -27,6 +44,39 @@ export function Experience() {
             Web and software development, healthcare operations, and now workforce analytics and business
             intelligence. Select a role to see what I did.
           </p>
+
+          <div className="mt-8 min-h-[72px] max-w-[340px] text-sm" aria-live="polite">
+            {selected && selectedLabel ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onSelect(null)}
+                  className="inline-flex items-center gap-2 rounded-full border border-ink bg-lime px-4 py-2 font-medium"
+                >
+                  Highlighting {selectedLabel}
+                  <X size={14} aria-hidden="true" />
+                  <span className="sr-only">Clear highlight</span>
+                </button>
+                <p className="mt-3 leading-relaxed text-muted">
+                  {matchCount > 0 ? (
+                    <>
+                      Used in {matchCount} of {roles.length} roles and {projectsForSkill(selected).length} featured{" "}
+                      {projectsForSkill(selected).length === 1 ? "project" : "projects"}.{" "}
+                      <a href="#projects" className="font-medium text-ink underline underline-offset-4">
+                        See the projects
+                      </a>
+                    </>
+                  ) : (
+                    <>No role lists {selectedLabel} directly. It's in the toolkit under Skills.</>
+                  )}
+                </p>
+              </>
+            ) : (
+              <p className="leading-relaxed text-muted">
+                Tip: select a tool inside a role and the whole site lights up where I used it.
+              </p>
+            )}
+          </div>
         </Reveal>
 
         <ol ref={listRef} className="relative">
@@ -39,8 +89,13 @@ export function Experience() {
 
           {roles.map((role) => {
             const open = openId === role.id;
+            const uses = selected ? roleUsesSkill(role, selected) : false;
+            const used = skillsForRole(role);
             return (
-              <li key={role.id} className="relative pb-5 pl-12">
+              <li
+                key={role.id}
+                className={`relative pb-5 pl-12 transition-opacity duration-300 ${focusing && !uses ? "opacity-40" : ""}`}
+              >
                 <motion.span
                   aria-hidden="true"
                   className="absolute left-0 top-6 grid h-6 w-6 place-items-center rounded-full border border-ink bg-white"
@@ -52,7 +107,11 @@ export function Experience() {
                   <span className={`h-2 w-2 rounded-full ${role.current ? "bg-lime-deep" : "bg-ink"}`} />
                 </motion.span>
 
-                <div className={`glass-card transition-colors duration-300 ${open ? "border-ink/30" : ""}`}>
+                <div
+                  className={`glass-card transition-colors duration-300 ${
+                    focusing && uses ? "border-ink ring-1 ring-lime" : open ? "border-ink/30" : ""
+                  }`}
+                >
                   <button
                     type="button"
                     aria-expanded={open}
@@ -66,6 +125,21 @@ export function Experience() {
                         {role.org} · {role.location}
                       </span>
                       <span className="mt-1 block text-sm text-muted sm:hidden">{role.period}</span>
+                      <span className="mt-3 flex items-center gap-1" aria-hidden="true">
+                        {skills.map((sk) => {
+                          const on = used.includes(sk.id);
+                          const sel = selected === sk.id;
+                          return (
+                            <span
+                              key={sk.id}
+                              title={`${sk.label}${on ? "" : " (not used)"}`}
+                              className={`h-1.5 w-5 rounded-full transition-colors duration-300 ${
+                                sel && on ? "bg-lime-deep" : on ? "bg-ink/80" : "bg-line"
+                              }`}
+                            />
+                          );
+                        })}
+                      </span>
                     </span>
                     <span className="flex flex-none items-center gap-3">
                       {role.current && (
@@ -100,11 +174,32 @@ export function Experience() {
                             ))}
                           </ul>
                           <ul className="mt-5 flex flex-wrap gap-2" aria-label="Tools used">
-                            {role.tools.map((t) => (
-                              <li key={t} className="rounded-full border border-line bg-white px-3 py-1 text-xs">
-                                {t}
-                              </li>
-                            ))}
+                            {role.tools.map((t) => {
+                              const sid = skillIdForTool(t);
+                              if (!sid) {
+                                return (
+                                  <li key={t} className="rounded-full border border-line bg-white px-3 py-1 text-xs">
+                                    {t}
+                                  </li>
+                                );
+                              }
+                              const on = selected === sid;
+                              return (
+                                <li key={t}>
+                                  <button
+                                    type="button"
+                                    aria-pressed={on}
+                                    data-cursor={on ? "Clear" : "Highlight"}
+                                    onClick={() => onSelect(on ? null : sid)}
+                                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                                      on ? "border-ink bg-lime font-medium" : "border-line bg-white hover:border-ink"
+                                    }`}
+                                  >
+                                    {t}
+                                  </button>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       </motion.div>

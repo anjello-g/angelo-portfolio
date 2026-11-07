@@ -26,6 +26,7 @@ function CopyEmail() {
       type="button"
       onClick={copy}
       aria-label="Copy email address"
+      data-cursor="Copy"
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
         copied ? "border-ink bg-lime" : "border-[#CFCFD7] bg-white/60 hover:border-ink"
       }`}
@@ -80,6 +81,7 @@ export function Contact() {
               <li>
                 <a
                   href={profile.linkedin}
+                  data-cursor="Open"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 hover:text-muted"
@@ -92,6 +94,7 @@ export function Contact() {
               <li>
                 <a
                   href={profile.github}
+                  data-cursor="Open"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 hover:text-muted"
